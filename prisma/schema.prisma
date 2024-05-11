@@ -36,6 +36,11 @@ model Transaction {
   sellerId  Int
   buyerId   Int
   createdAt DateTime @default(now())
+  status   String
+  requestId Int
+  parkingSpotId Int
+  parkingSpot  ParkingSpot @relation(fields: [parkingSpotId], references: [id], onDelete: Cascade)
+  Request  Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
   seller    User     @relation("TransactionSeller", fields: [sellerId], references: [id], onDelete: Cascade)
   buyer     User     @relation("TransactionBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
 }
@@ -53,6 +58,7 @@ model ParkingSpot {
   actual_location_updated_at  DateTime?           @db.Date
   @@index([location], name: "location_idx", type: Gist)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
 }
 
 model Request {
@@ -65,4 +71,5 @@ model Request {
   bid           Decimal  @db.Decimal(10, 2)
   type          String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
 }
