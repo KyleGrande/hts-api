@@ -33,6 +33,8 @@ CREATE TABLE "ParkingSpot" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cost" DECIMAL(10,2) NOT NULL,
     "type" TEXT NOT NULL,
+    "location" geometry(Point, 4326) DEFAULT null,
+    "actual_location_updated_at" DATE,
 
     CONSTRAINT "ParkingSpot_pkey" PRIMARY KEY ("id")
 );
@@ -53,6 +55,9 @@ CREATE TABLE "Request" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "location_idx" ON "ParkingSpot" USING GIST ("location");
 
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
