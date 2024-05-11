@@ -45,8 +45,8 @@ CREATE TABLE matches (
 -- Transactions Table
 CREATE TABLE transactions (
     TransactionID SERIAL PRIMARY KEY,
-    BuyerID INT NOT NULL REFERENCES users(UserID),
-    SellerID INT NOT NULL REFERENCES users(UserID),
+    -- BuyerID INT NOT NULL REFERENCES users(UserID),
+    -- SellerID INT NOT NULL REFERENCES users(UserID),
     MatchID INT NOT NULL REFERENCES matches(MatchID),
     Amount DECIMAL NOT NULL,
     TransactionType TEXT NOT NULL,
