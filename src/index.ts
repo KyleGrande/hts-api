@@ -22,6 +22,10 @@ app.get("/", (req: Request, res: Response) => {
   res.status(200).send("Server is up and running!");
 });
 
+app.get("/spots", async (req: Request, res: Response) => {
+  const spots = await prisma.parkingSpot.findMany();
+  res.status(200).send(spots);
+});
 // app.use("/users", userRoutes);
 
 // Error handling middleware
