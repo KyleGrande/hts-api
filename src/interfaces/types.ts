@@ -1,8 +1,11 @@
-interface Config {
+export interface Config {
   environment: string;
   port: string;
   databaseUrl: string;
 
   // Other configuration properties...
 }
-export default Config;
+export interface Location {
+  lat: number;
+  long: number;
+}

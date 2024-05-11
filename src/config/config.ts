@@ -1,6 +1,5 @@
 // config.ts
-import config from "../interfaces/config/config";
-
+import { Config } from "../interfaces/types";
 const dotenv = require("dotenv");
 const path = require("path");
 
@@ -11,7 +10,7 @@ const envPath = path.resolve(process.cwd(), `.env.${env}`);
 // Load the environment variables from the specified file
 dotenv.config({ path: envPath });
 
-export const config: config = {
+export const config: Config = {
   environment: process.env.NODE_ENV || "development",
   port: process.env.API_PORT || "3000",
   databaseUrl: process.env.DATABASE_URL || "localhost",

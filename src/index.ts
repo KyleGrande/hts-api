@@ -7,31 +7,33 @@ import { config } from "./config/config";
 
 import { PrismaClient } from "@prisma/client";
 
-// import userRoutes from "./routes/userRoutes";
-// import { errorHandler } from "./middlewares/errorHandler";
+import userRoutes from "./routes/user.routes";
+import transactionRoutes from "./routes/transaction.routes";
+import parkingSpotRoutes from "./routes/spot.routes";
+import requestRoutes from "./routes/request.routes";
+import errorHandler from "./middleware/errorHandler";
 
 const app: Application = express();
 const prisma = new PrismaClient();
 
+// Middleware for parsing JSON and urlencoded data and enabling CORS
 app.use(json());
 app.use(urlencoded({ extended: true }));
-
 app.use(cors());
 
+// Basic route to check server status
 app.get("/", (req: Request, res: Response) => {
   res.status(200).send("Server is up and running!");
 });
 
-app.get("/spots", async (req: Request, res: Response) => {
-  const spots = await prisma.parkingSpot.findMany();
-  res.status(200).send(spots);
-});
-// app.use("/users", userRoutes);
+// Route handlers
+app.use("/users", userRoutes);
+app.use("/transactions", transactionRoutes);
+app.use("/parkingspots", parkingSpotRoutes);
+app.use("/requests", requestRoutes);
 
-// Error handling middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  // errorHandler(err, res);
-});
+// Error handling middleware usage
+app.use(errorHandler);
 
 // Function to start the server and connect to the database
 async function startServer() {
