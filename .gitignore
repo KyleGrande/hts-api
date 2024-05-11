@@ -1,0 +1,8 @@
+.env
+/node_modules/
+.env.dev
+.env.prod
+.env.test
+.DS_Store
+/build/
+/dist/
