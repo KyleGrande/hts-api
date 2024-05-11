@@ -1,14 +1,14 @@
-// index.js or app.js
-require("./config"); // Loads the appropriate environment configuration
-const express = require("express");
+// src/index.ts
+import "./config"; // Loads the appropriate environment configuration
+import express, { Request, Response } from "express";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
 });
 
 app.listen(port, () => {
-  console.log(`App running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
