@@ -9,7 +9,7 @@ export async function createParkingSpot(
   try {
     const { userId, status, available, departureTime, cost, type, location } =
       req.body;
-    const parkingSpot = await parkingSpotService.createParkingSpotUsingRawSQL(
+    const parkingSpot = await parkingSpotService.createParkingSpot(
       userId,
       status,
       available,

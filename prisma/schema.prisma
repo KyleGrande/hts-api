@@ -22,7 +22,7 @@ model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
   name         String?
-  balance      Decimal       @db.Decimal(10, 2) @default(0.00)
+  balance      Decimal       @db.Money @default(0.00)
   requests     Request[]
   parkingSpots ParkingSpot[]
   soldTransactions Transaction[] @relation("TransactionSeller")
