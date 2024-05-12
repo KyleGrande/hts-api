@@ -1,68 +1,76 @@
 import { Request, Response, NextFunction } from "express";
-import * as userService from "../services/user.service"; // Assuming userService exports functions
+import * as userService from "../services/user.service"; // Ensure path is correct
 
-export function createUser(
+export async function createUser(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const { email, name, balance } = req.body;
-  userService
-    .createUser(email, name, balance)
-    .then((user) => res.status(201).json(user))
-    .catch(next);
+): Promise<void> {
+  try {
+    const { email, name, balance } = req.body;
+    const user = await userService.createUser(email, name, balance);
+    res.status(201).json(user);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function getUserById(
+export async function getUserById(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  userService
-    .findUserById(id)
-    .then((user) => {
-      if (user) {
-        res.json(user);
-      } else {
-        res.status(404).send("User not found");
-      }
-    })
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    const user = await userService.findUserById(id);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function updateUser(
+export async function updateUser(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  const { email, name, balance } = req.body;
-  userService
-    .updateUser(id, email, name, balance)
-    .then((user) => res.json(user))
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    const { email, name, balance } = req.body;
+    const user = await userService.updateUser(id, email, name, balance);
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function deleteUser(
+export async function deleteUser(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  userService
-    .deleteUser(id)
-    .then(() => res.status(204).send())
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    await userService.deleteUser(id);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function listUsers(
+export async function listUsers(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  userService
-    .listUsers()
-    .then((users) => res.json(users))
-    .catch(next);
+): Promise<void> {
+  try {
+    const users = await userService.listUsers();
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
 }

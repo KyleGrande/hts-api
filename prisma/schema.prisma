@@ -47,16 +47,16 @@ model Transaction {
 
 model ParkingSpot {
   id     Int    @id @default(autoincrement())
-  userId Int
+  userid Int
   status String
   available Boolean
-  departureTime DateTime
-  createdAt DateTime @default(now())
+  departuretime DateTime
+  createdat DateTime @default(now())
   cost Decimal @db.Decimal(10, 2)
   type String
   location Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))
   @@index([location], name: "location_idx", type: Gist)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userid], references: [id], onDelete: Cascade)
   transactions Transaction[]
 }
 

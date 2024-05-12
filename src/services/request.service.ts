@@ -2,7 +2,7 @@ import { PrismaClient, Request } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export function createRequest(
+export async function createRequest(
   userId: number,
   status: string,
   arrivalTime: Date,
@@ -10,26 +10,33 @@ export function createRequest(
   bid: number,
   type: string
 ): Promise<Request> {
-  return prisma.request.create({
-    data: {
-      userId,
-      status,
-      arrivalTime,
-      departureTime,
-      bid,
-      type,
-    },
-  });
+  try {
+    const request = await prisma.request.create({
+      data: {
+        userId,
+        status,
+        arrivalTime,
+        departureTime,
+        bid,
+        type,
+      },
+    });
+    return request;
+  } catch (error) {
+    // Handle or log the error as needed
+    throw error;
+  }
 }
 
-export function getRequestById(id: number): Promise<Request | null> {
-  return prisma.request.findUnique({
+export async function getRequestById(id: number): Promise<Request | null> {
+  const request = await prisma.request.findUnique({
     where: { id },
     include: { user: true, transactions: true }, // Include related user and transactions data
   });
+  return request;
 }
 
-export function updateRequest(
+export async function updateRequest(
   id: number,
   data: {
     status?: string;
@@ -39,20 +46,23 @@ export function updateRequest(
     type?: string;
   }
 ): Promise<Request> {
-  return prisma.request.update({
+  const request = await prisma.request.update({
     where: { id },
     data,
   });
+  return request;
 }
 
-export function deleteRequest(id: number): Promise<Request> {
-  return prisma.request.delete({
+export async function deleteRequest(id: number): Promise<Request> {
+  const request = await prisma.request.delete({
     where: { id },
   });
+  return request;
 }
 
-export function listRequests(): Promise<Request[]> {
-  return prisma.request.findMany({
+export async function listRequests(): Promise<Request[]> {
+  const request = prisma.request.findMany({
     include: { user: true, transactions: true }, // Include related user and transactions data
   });
+  return request;
 }

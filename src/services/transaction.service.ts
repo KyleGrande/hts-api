@@ -2,7 +2,7 @@ import { PrismaClient, Transaction } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export function createTransaction(
+export async function createTransaction(
   amount: number,
   type: string,
   sellerId: number,
@@ -11,7 +11,7 @@ export function createTransaction(
   requestId: number,
   parkingSpotId: number
 ): Promise<Transaction> {
-  return prisma.transaction.create({
+  const transaction = await prisma.transaction.create({
     data: {
       amount,
       type,
@@ -22,15 +22,19 @@ export function createTransaction(
       parkingSpotId,
     },
   });
+  return transaction;
 }
 
-export function getTransactionById(id: number): Promise<Transaction | null> {
-  return prisma.transaction.findUnique({
+export async function getTransactionById(
+  id: number
+): Promise<Transaction | null> {
+  const transaction = await prisma.transaction.findUnique({
     where: { id },
   });
+  return transaction;
 }
 
-export function updateTransaction(
+export async function updateTransaction(
   id: number,
   data: {
     amount?: number;
@@ -40,18 +44,21 @@ export function updateTransaction(
     parkingSpotId?: number;
   }
 ): Promise<Transaction> {
-  return prisma.transaction.update({
+  const updatedTransaction = await prisma.transaction.update({
     where: { id },
     data,
   });
+  return updatedTransaction;
 }
 
-export function deleteTransaction(id: number): Promise<Transaction> {
-  return prisma.transaction.delete({
+export async function deleteTransaction(id: number): Promise<Transaction> {
+  const deletedTransaction = await prisma.transaction.delete({
     where: { id },
   });
+  return deletedTransaction;
 }
 
-export function listTransactions(): Promise<Transaction[]> {
-  return prisma.transaction.findMany();
+export async function listTransactions(): Promise<Transaction[]> {
+  const transactions = await prisma.transaction.findMany();
+  return transactions;
 }
