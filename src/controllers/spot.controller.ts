@@ -7,15 +7,22 @@ export async function createParkingSpot(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { userId, status, available, departureTime, cost, type, location } =
-      req.body;
+    const {
+      userId,
+      status,
+      availabilityStart,
+      price,
+      region,
+      subregion,
+      location,
+    } = req.body;
     const parkingSpot = await parkingSpotService.createParkingSpot(
       userId,
       status,
-      available,
-      departureTime,
-      cost,
-      type,
+      availabilityStart,
+      price,
+      region,
+      subregion,
       location
     );
     res.status(201).json(parkingSpot);
@@ -49,13 +56,14 @@ export async function updateParkingSpot(
 ): Promise<void> {
   try {
     const id = parseInt(req.params.id);
-    const { status, available, departureTime, cost, type, location } = req.body;
+    const { status, availabilityStart, price, region, subregion, location } =
+      req.body;
     const updatedParkingSpot = await parkingSpotService.updateParkingSpot(id, {
       status,
-      available,
-      departureTime,
-      cost,
-      type,
+      availabilityStart,
+      price,
+      region,
+      subregion,
       location,
     });
     res.json(updatedParkingSpot);

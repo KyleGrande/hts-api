@@ -7,23 +7,14 @@ export async function createTransaction(
   next: NextFunction
 ): Promise<void> {
   try {
-    const {
-      amount,
-      type,
-      sellerId,
-      buyerId,
-      status,
-      requestId,
-      parkingSpotId,
-    } = req.body;
+    const { amount, type, sellerId, buyerId, status, matchId } = req.body;
     const transaction = await transactionService.createTransaction(
       amount,
       type,
       sellerId,
       buyerId,
       status,
-      requestId,
-      parkingSpotId
+      matchId
     );
     res.status(201).json(transaction);
   } catch (error) {
@@ -56,13 +47,14 @@ export async function updateTransaction(
 ): Promise<void> {
   try {
     const id = Number(req.params.id);
-    const { amount, type, status, requestId, parkingSpotId } = req.body;
+    const { amount, type, paymentType, sellerId, buyerId, matchId } = req.body;
     const transaction = await transactionService.updateTransaction(id, {
       amount,
       type,
-      status,
-      requestId,
-      parkingSpotId,
+      paymentType,
+      sellerId,
+      buyerId,
+      matchId,
     });
     res.json(transaction);
   } catch (error) {

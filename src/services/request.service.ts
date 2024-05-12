@@ -1,26 +1,26 @@
-import { PrismaClient, Request } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Request, RequestStatus, RequestType } from "@prisma/client";
+import { prisma } from "../utils/request.util";
+import { MyLocation, MyRequest } from "../interfaces/types";
 
 export async function createRequest(
-  userId: number,
-  status: string,
+  userid: number,
+  status: RequestStatus,
+  type: RequestType,
   arrivalTime: Date,
   departureTime: Date,
-  bid: number,
-  type: string
-): Promise<Request> {
+  location: MyLocation,
+  bid: number
+): Promise<MyRequest> {
   try {
-    const request = await prisma.request.create({
-      data: {
-        userId,
-        status,
-        arrivalTime,
-        departureTime,
-        bid,
-        type,
-      },
-    });
+    const request = await prisma.request.create(
+      userid,
+      status,
+      type,
+      arrivalTime,
+      departureTime,
+      location,
+      bid
+    );
     return request;
   } catch (error) {
     // Handle or log the error as needed
@@ -31,7 +31,7 @@ export async function createRequest(
 export async function getRequestById(id: number): Promise<Request | null> {
   const request = await prisma.request.findUnique({
     where: { id },
-    include: { user: true, transactions: true }, // Include related user and transactions data
+    include: { user: true }, // Include related user and transactions data
   });
   return request;
 }
@@ -39,11 +39,12 @@ export async function getRequestById(id: number): Promise<Request | null> {
 export async function updateRequest(
   id: number,
   data: {
-    status?: string;
+    status?: RequestStatus;
+    type?: RequestType;
     arrivalTime?: Date;
     departureTime?: Date;
+    location?: MyLocation;
     bid?: number;
-    type?: string;
   }
 ): Promise<Request> {
   const request = await prisma.request.update({
@@ -62,7 +63,7 @@ export async function deleteRequest(id: number): Promise<Request> {
 
 export async function listRequests(): Promise<Request[]> {
   const request = prisma.request.findMany({
-    include: { user: true, transactions: true }, // Include related user and transactions data
+    include: { user: true }, // Include related user and transactions data
   });
   return request;
 }

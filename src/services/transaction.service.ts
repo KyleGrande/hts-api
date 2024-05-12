@@ -1,25 +1,28 @@
-import { PrismaClient, Transaction } from "@prisma/client";
+import {
+  PaymentType,
+  PrismaClient,
+  Transaction,
+  TransactionType,
+} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function createTransaction(
   amount: number,
-  type: string,
+  type: TransactionType,
   sellerId: number,
   buyerId: number,
-  status: string,
-  requestId: number,
-  parkingSpotId: number
+  paymentType: PaymentType, // Renamed from 'status' to 'paymentType'
+  matchId: number
 ): Promise<Transaction> {
   const transaction = await prisma.transaction.create({
     data: {
       amount,
       type,
+      paymentType,
       sellerId,
       buyerId,
-      status,
-      requestId,
-      parkingSpotId,
+      matchId: matchId,
     },
   });
   return transaction;
@@ -38,10 +41,11 @@ export async function updateTransaction(
   id: number,
   data: {
     amount?: number;
-    type?: string;
-    status?: string;
-    requestId?: number;
-    parkingSpotId?: number;
+    type?: TransactionType;
+    paymentType?: PaymentType;
+    sellerId?: number;
+    buyerId?: number;
+    matchId?: number;
   }
 ): Promise<Transaction> {
   const updatedTransaction = await prisma.transaction.update({

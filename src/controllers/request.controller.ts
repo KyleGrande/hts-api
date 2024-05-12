@@ -7,14 +7,16 @@ export async function createRequest(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { userId, status, arrivalTime, departureTime, bid, type } = req.body;
+    const { userid, status, type, arrivalTime, departureTime, location, bid } =
+      req.body;
     const request = await requestService.createRequest(
-      userId,
+      userid,
       status,
+      type,
       new Date(arrivalTime),
       new Date(departureTime),
-      bid,
-      type
+      location,
+      bid
     );
     res.status(201).json(request);
   } catch (error) {

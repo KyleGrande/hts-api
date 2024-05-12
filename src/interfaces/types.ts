@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 export interface Config {
   environment: string;
   port: string;
@@ -12,9 +11,53 @@ export interface MyLocation {
 export type MyParkingSpot = {
   userId: number;
   status: string;
-  available: boolean;
+  availabilityTime: boolean;
   departureTime: Date;
-  cost: number;
-  type: string;
+  price: number;
+  region: String;
+  subregion: String;
   location: MyLocation;
 };
+
+export type MyRequest = {
+  userId: number;
+  status: string;
+  type: string;
+  arrivalTime: Date;
+  departureTime: Date;
+  location: MyLocation;
+  bid: number;
+};
+
+enum ListingStatus {
+  Available,
+  Occupied,
+  Reserved,
+  Unavailable,
+}
+
+enum RequestStatus {
+  Completed,
+  Cancelled,
+  Matched,
+  Searching,
+}
+
+enum RequestType {
+  Instant,
+  Scheduled,
+  Bid,
+}
+
+enum TransactionType {
+  Payment,
+  Refund,
+}
+
+enum PaymentType {
+  CreditCard,
+  PayPal,
+  ApplePay,
+  BankTransfer,
+  AccountBalance,
+}
