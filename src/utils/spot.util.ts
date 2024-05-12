@@ -27,3 +27,23 @@ export const prisma = new PrismaClient().$extends({
     },
   },
 });
+
+// old createParkingSpot function
+export async function createParkingSpotUsingRawSQL(
+  userId: number,
+  status: string,
+  available: boolean,
+  departureTime: Date,
+  cost: number,
+  type: string,
+  location: MyLocation
+): Promise<unknown> {
+  const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
+  console.log(departureTime);
+  departureTime = new Date(departureTime);
+  console.log(departureTime);
+  const parkingSpot =
+    await prisma.$queryRaw`INSERT INTO "ParkingSpot" (userid, status, available, departuretime, cost, type, location) VALUES (${userId}, ${status}, ${available}, ${departureTime}, ${cost}, ${type}, ST_GeomFromText(${locationWKT}, 4326))`;
+  console.log(parkingSpot);
+  return parkingSpot;
+}
