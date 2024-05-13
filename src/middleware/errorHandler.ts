@@ -1,6 +1,6 @@
 // src/middlewares/errorHandler.ts
 
-import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import { ErrorRequestHandler } from "express";
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (res.headersSent) {
