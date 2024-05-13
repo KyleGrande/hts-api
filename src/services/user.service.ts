@@ -1,3 +1,5 @@
+// src/services/user.service.ts
+
 import { PrismaClient, User } from "@prisma/client";
 
 const prisma = new PrismaClient();

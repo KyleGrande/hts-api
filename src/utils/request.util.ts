@@ -1,5 +1,5 @@
 import { RequestStatus, RequestType, PrismaClient } from "@prisma/client";
-import { MyLocation, MyParkingSpot, MyRequest } from "../interfaces/types";
+import { MyLocation, MyRequest } from "../interfaces/types";
 
 export const prisma = new PrismaClient().$extends({
   model: {

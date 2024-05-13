@@ -1,7 +1,9 @@
+// src/controllers/request.controller.ts
+
 import { Request, Response, NextFunction } from "express";
 import * as requestService from "../services/request.service"; // Make sure path is correct
 
-export async function createRequest(
+export async function createRequestController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -24,7 +26,7 @@ export async function createRequest(
   }
 }
 
-export async function getRequestById(
+export async function getRequestByIdController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -42,7 +44,7 @@ export async function getRequestById(
   }
 }
 
-export async function updateRequest(
+export async function updateRequestByIdController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -50,7 +52,7 @@ export async function updateRequest(
   try {
     const id = Number(req.params.id);
     const { status, arrivalTime, departureTime, bid, type } = req.body;
-    const updatedRequest = await requestService.updateRequest(id, {
+    const updatedRequest = await requestService.updateRequestById(id, {
       status,
       arrivalTime: new Date(arrivalTime),
       departureTime: new Date(departureTime),
@@ -63,7 +65,7 @@ export async function updateRequest(
   }
 }
 
-export async function deleteRequest(
+export async function deleteRequestController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -77,13 +79,13 @@ export async function deleteRequest(
   }
 }
 
-export async function listRequests(
+export async function getAllRequestsController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const requests = await requestService.listRequests();
+    const requests = await requestService.getAllRequest();
     res.json(requests);
   } catch (error) {
     next(error);

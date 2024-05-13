@@ -1,7 +1,9 @@
-import { Request, Response, NextFunction } from "express";
-import * as transactionService from "../services/transaction.service"; // Ensure path is correct
+// src/controllers/transaction.controller.ts
 
-export async function createTransaction(
+import { Request, Response, NextFunction } from "express";
+import * as transactionService from "../services/transaction.service";
+
+export async function createTransactionController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -22,7 +24,7 @@ export async function createTransaction(
   }
 }
 
-export async function getTransactionById(
+export async function getTransactionByIdController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -40,7 +42,7 @@ export async function getTransactionById(
   }
 }
 
-export async function updateTransaction(
+export async function updateTransactionByIdController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -48,7 +50,7 @@ export async function updateTransaction(
   try {
     const id = Number(req.params.id);
     const { amount, type, paymentType, sellerId, buyerId, matchId } = req.body;
-    const transaction = await transactionService.updateTransaction(id, {
+    const transaction = await transactionService.updateTransactionById(id, {
       amount,
       type,
       paymentType,
@@ -62,7 +64,7 @@ export async function updateTransaction(
   }
 }
 
-export async function deleteTransaction(
+export async function deleteTransactionController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -76,13 +78,13 @@ export async function deleteTransaction(
   }
 }
 
-export async function listTransactions(
+export async function getAllTransactionsController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const transactions = await transactionService.listTransactions();
+    const transactions = await transactionService.getAllTransactions();
     res.json(transactions);
   } catch (error) {
     next(error);

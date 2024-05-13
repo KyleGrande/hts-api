@@ -1,3 +1,5 @@
+// src/services/request.service.ts
+
 import { Request, RequestStatus, RequestType } from "@prisma/client";
 import { prisma } from "../utils/request.util";
 import { MyLocation, MyRequest } from "../interfaces/types";
@@ -36,7 +38,7 @@ export async function getRequestById(id: number): Promise<Request | null> {
   return request;
 }
 
-export async function updateRequest(
+export async function updateRequestById(
   id: number,
   data: {
     status?: RequestStatus;
@@ -61,7 +63,7 @@ export async function deleteRequest(id: number): Promise<Request> {
   return request;
 }
 
-export async function listRequests(): Promise<Request[]> {
+export async function getAllRequest(): Promise<Request[]> {
   const request = prisma.request.findMany({
     include: { user: true }, // Include related user and transactions data
   });

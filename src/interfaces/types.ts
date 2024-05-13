@@ -1,3 +1,5 @@
+// interfaces/types.ts
+
 export interface Config {
   environment: string;
   port: string;
@@ -8,7 +10,7 @@ export interface MyLocation {
   longitude: number;
 }
 
-export type MyParkingSpot = {
+export type MyListing = {
   userId: number;
   status: string;
   availabilityTime: boolean;

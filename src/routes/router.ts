@@ -1,8 +1,10 @@
+// src/routes/router.ts
+
 import express from "express";
 
 import userRoutes from "./user.routes";
 import transactionRoutes from "./transaction.routes";
-import parkingSpotRoutes from "./spot.routes";
+import parkingSpotRoutes from "./listing.routes";
 import requestRoutes from "./request.routes";
 
 const router = express.Router();

@@ -1,5 +1,7 @@
+// src/util/listing.util.ts
+
 import { ListingStatus, PrismaClient } from "@prisma/client";
-import { MyLocation, MyParkingSpot } from "../interfaces/types";
+import { MyLocation, MyListing } from "../interfaces/types";
 export const prisma = new PrismaClient().$extends({
   model: {
     listing: {
@@ -14,7 +16,7 @@ export const prisma = new PrismaClient().$extends({
       ) {
         const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
         availabilityStart = new Date(availabilityStart); // Ensure departureTime is a valid Date object
-        const parkingSpot: MyParkingSpot[] = await prisma.$queryRaw`
+        const parkingSpot: MyListing[] = await prisma.$queryRaw`
               INSERT INTO "Listing" (userid, status, availabilitystart, price, region, subregion, location)
               VALUES (${userId}, ${status}::"ListingStatus", ${availabilityStart}, ${price}, ${region}, ${subregion}, ST_GeomFromText(${locationWKT}, 4326))
               RETURNING id, userid, status, availabilityStart, price, region, subregion, location::text as location`;

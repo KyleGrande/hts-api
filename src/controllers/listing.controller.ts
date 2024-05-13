@@ -1,7 +1,9 @@
-import { Request, Response, NextFunction } from "express";
-import * as parkingSpotService from "../services/spot.service";
+// src/controllers/listing.controller.ts
 
-export async function createParkingSpot(
+import { Request, Response, NextFunction } from "express";
+import * as listingService from "../services/listing.service";
+
+export async function createListingController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -16,7 +18,7 @@ export async function createParkingSpot(
       subregion,
       location,
     } = req.body;
-    const parkingSpot = await parkingSpotService.createParkingSpot(
+    const parkingSpot = await listingService.createListing(
       userId,
       status,
       availabilityStart,
@@ -31,14 +33,14 @@ export async function createParkingSpot(
   }
 }
 
-export async function getParkingSpotById(
+export async function getListingByIdController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
     const id = parseInt(req.params.id);
-    const parkingSpot = await parkingSpotService.getParkingSpotById(id);
+    const parkingSpot = await listingService.getListingById(id);
     if (parkingSpot) {
       res.json(parkingSpot);
     } else {
@@ -49,7 +51,7 @@ export async function getParkingSpotById(
   }
 }
 
-export async function updateParkingSpot(
+export async function updateListingByIdController(
   req: Request,
   res: Response,
   next: NextFunction
@@ -58,7 +60,7 @@ export async function updateParkingSpot(
     const id = parseInt(req.params.id);
     const { status, availabilityStart, price, region, subregion, location } =
       req.body;
-    const updatedParkingSpot = await parkingSpotService.updateParkingSpot(id, {
+    const updatedParkingSpot = await listingService.updateListingById(id, {
       status,
       availabilityStart,
       price,
@@ -72,27 +74,27 @@ export async function updateParkingSpot(
   }
 }
 
-export async function deleteParkingSpot(
+export async function deleteListingController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
     const id = parseInt(req.params.id);
-    await parkingSpotService.deleteParkingSpot(id);
+    await listingService.deleteListing(id);
     res.status(204).send();
   } catch (error) {
     next(error);
   }
 }
 
-export async function listParkingSpots(
+export async function getAllListingsController(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const parkingSpots = await parkingSpotService.listParkingSpots();
+    const parkingSpots = await listingService.getAllListings();
     res.json(parkingSpots);
   } catch (error) {
     next(error);

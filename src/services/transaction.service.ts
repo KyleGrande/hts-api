@@ -1,3 +1,5 @@
+// src/services/transaction.routes.ts
+
 import {
   PaymentType,
   PrismaClient,
@@ -37,7 +39,7 @@ export async function getTransactionById(
   return transaction;
 }
 
-export async function updateTransaction(
+export async function updateTransactionById(
   id: number,
   data: {
     amount?: number;
@@ -62,7 +64,7 @@ export async function deleteTransaction(id: number): Promise<Transaction> {
   return deletedTransaction;
 }
 
-export async function listTransactions(): Promise<Transaction[]> {
+export async function getAllTransactions(): Promise<Transaction[]> {
   const transactions = await prisma.transaction.findMany();
   return transactions;
 }
