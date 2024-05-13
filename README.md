@@ -13,4 +13,5 @@ Start the dev server
 npm run dev
 
 export NODE_ENV=test
+
 export NODE_ENV=prod
