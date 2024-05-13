@@ -86,6 +86,7 @@ model Request {
   createdAt     DateTime @default(now())
   arrivaltime   DateTime
   departuretime DateTime
+  relist        Boolean @default(true)
   location      Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))
   bid           Decimal  @db.Decimal(10, 2)
   user          User     @relation(fields: [userid], references: [id], onDelete: Cascade)
@@ -97,6 +98,7 @@ model Match {
   requestId    Int
   listingId    Int
   matchedDate  DateTime   @default(now())
+  distance     Float
   request      Request    @relation(fields: [requestId], references: [id], onDelete: Cascade)
   listing      Listing    @relation(fields: [listingId], references: [id], onDelete: Cascade)
   transactions Transaction[]

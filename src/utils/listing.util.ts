@@ -16,15 +16,15 @@ export const prisma = new PrismaClient().$extends({
       ) {
         const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
         availabilityStart = new Date(availabilityStart); // Ensure departureTime is a valid Date object
-        const parkingSpot: MyListing[] = await prisma.$queryRaw`
+        const listing: MyListing[] = await prisma.$queryRaw`
               INSERT INTO "Listing" (userid, status, availabilitystart, price, region, subregion, location)
               VALUES (${userId}, ${status}::"ListingStatus", ${availabilityStart}, ${price}, ${region}, ${subregion}, ST_GeomFromText(${locationWKT}, 4326))
               RETURNING id, userid, status, availabilityStart, price, region, subregion, location::text as location`;
-        parkingSpot[0].price = parseFloat(
-          parkingSpot[0].price.toFixed(2)
+        listing[0].price = parseFloat(
+          listing[0].price.toFixed(2)
         ) as unknown as number;
         //parkingSpot[0].cost = parkingSpot[0].cost.toFixed(2);
-        return parkingSpot[0];
+        return listing[0];
       },
     },
   },

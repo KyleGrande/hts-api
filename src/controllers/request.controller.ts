@@ -9,14 +9,23 @@ export async function createRequestController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { userid, status, type, arrivalTime, departureTime, location, bid } =
-      req.body;
+    const {
+      userid,
+      status,
+      type,
+      arrivalTime,
+      departureTime,
+      relist,
+      location,
+      bid,
+    } = req.body;
     const request = await requestService.createRequest(
       userid,
       status,
       type,
       new Date(arrivalTime),
       new Date(departureTime),
+      relist,
       location,
       bid
     );

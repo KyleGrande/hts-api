@@ -12,6 +12,30 @@ export const prisma = new PrismaClient().$extends({
         type: RequestType,
         arrivalTime: Date,
         departureTime: Date,
+        relist: boolean,
+        location: MyLocation,
+        bid: number
+      ) {
+        const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
+        arrivalTime = new Date(arrivalTime);
+        departureTime = new Date(departureTime); // Ensure departureTime is a valid Date object
+        const request: MyRequest[] = await prisma.$queryRaw`
+              INSERT INTO "Request" (userid, status, type, arrivaltime, departuretime, location, bid)
+              VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${arrivalTime}, ${departureTime}, {relist} ST_GeomFromText(${locationWKT}, 4326), ${bid})
+              RETURNING id, userid, status, type, arrivaltime, departuretime, relist, location::text as location, bid`;
+
+        request[0].bid = parseFloat(
+          request[0].bid.toFixed(2)
+        ) as unknown as number;
+
+        return request[0];
+      },
+      async findListingMatch(
+        userId: number,
+        status: RequestStatus,
+        type: RequestType,
+        arrivalTime: Date,
+        departureTime: Date,
         location: MyLocation,
         bid: number
       ) {
