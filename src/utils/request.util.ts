@@ -21,7 +21,7 @@ export const prisma = new PrismaClient().$extends({
         departureTime = new Date(departureTime); // Ensure departureTime is a valid Date object
         const request: MyRequest[] = await prisma.$queryRaw`
               INSERT INTO "Request" (userid, status, type, arrivaltime, departuretime, location, bid)
-              VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${arrivalTime}, ${departureTime}, {relist} ST_GeomFromText(${locationWKT}, 4326), ${bid})
+              VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${arrivalTime}, ${departureTime}, ${relist} ST_GeomFromText(${locationWKT}, 4326), ${bid})
               RETURNING id, userid, status, type, arrivaltime, departuretime, relist, location::text as location, bid`;
 
         request[0].bid = parseFloat(
