@@ -15,3 +15,19 @@ export const getMatchByIdService = async (id: number) => {
         },
     });
 };
+
+export const deleteMatchByIdService = async (id: number) => {
+    return await prisma.match.delete({
+        where: {
+            id: id,
+        },
+    });
+};
+
+export const deleteMatchByRequestIdService = async (requestId: number) => {
+    return await prisma.match.deleteMany({
+        where: {
+            requestId: requestId,
+        },
+    });
+};

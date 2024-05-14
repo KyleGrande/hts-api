@@ -11,6 +11,7 @@ export interface MyLocation {
 }
 
 export type MyListing = {
+  id: number;
   userId: number;
   status: string;
   availabilityTime: boolean;
