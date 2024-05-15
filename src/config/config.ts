@@ -1,4 +1,5 @@
-// config.ts
+// src/config/config.ts
+
 import { Config } from "../interfaces/types";
 const dotenv = require("dotenv");
 const path = require("path");

@@ -1,12 +1,14 @@
+// src/routes/request.routes.ts
+
 import express from "express";
 import * as requestController from "../controllers/request.controller"; // Make sure the path is correct
 
 const router = express.Router();
 
-router.post("/", requestController.createRequest);
-router.get("/:id", requestController.getRequestById);
-router.put("/:id", requestController.updateRequest);
-router.delete("/:id", requestController.deleteRequest);
-router.get("/", requestController.listRequests);
+router.post("/", requestController.createRequestController);
+router.get("/:id", requestController.getRequestByIdController);
+router.put("/:id", requestController.updateRequestByIdController);
+router.delete("/:id", requestController.deleteRequestController);
+router.get("/", requestController.getAllRequestsController);
 
 export default router;

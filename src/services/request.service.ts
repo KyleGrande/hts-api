@@ -1,58 +1,73 @@
-import { PrismaClient, Request } from "@prisma/client";
+// src/services/request.service.ts
 
-const prisma = new PrismaClient();
+import { Request, RequestStatus, RequestType } from "@prisma/client";
+import { prisma } from "../utils/request.util";
+import { MyLocation, MyRequest } from "../interfaces/types";
 
-export function createRequest(
-  userId: number,
-  status: string,
+export async function createRequest(
+  userid: number,
+  status: RequestStatus,
+  type: RequestType,
   arrivalTime: Date,
   departureTime: Date,
-  bid: number,
-  type: string
-): Promise<Request> {
-  return prisma.request.create({
-    data: {
-      userId,
+  relist: boolean,
+  location: MyLocation,
+  bid: number
+): Promise<MyRequest> {
+  try {
+    const request = await prisma.request.create(
+      userid,
       status,
+      type,
       arrivalTime,
       departureTime,
-      bid,
-      type,
-    },
-  });
+      relist,
+      location,
+      bid
+    );
+    return request;
+  } catch (error) {
+    // Handle or log the error as needed
+    throw error;
+  }
 }
 
-export function getRequestById(id: number): Promise<Request | null> {
-  return prisma.request.findUnique({
+export async function getRequestById(id: number): Promise<Request | null> {
+  const request = await prisma.request.findUnique({
     where: { id },
-    include: { user: true, transactions: true }, // Include related user and transactions data
+    include: { user: true }, // Include related user and transactions data
   });
+  return request;
 }
 
-export function updateRequest(
+export async function updateRequestById(
   id: number,
   data: {
-    status?: string;
+    status?: RequestStatus;
+    type?: RequestType;
     arrivalTime?: Date;
     departureTime?: Date;
+    location?: MyLocation;
     bid?: number;
-    type?: string;
   }
 ): Promise<Request> {
-  return prisma.request.update({
+  const request = await prisma.request.update({
     where: { id },
     data,
   });
+  return request;
 }
 
-export function deleteRequest(id: number): Promise<Request> {
-  return prisma.request.delete({
+export async function deleteRequest(id: number): Promise<Request> {
+  const request = await prisma.request.delete({
     where: { id },
   });
+  return request;
 }
 
-export function listRequests(): Promise<Request[]> {
-  return prisma.request.findMany({
-    include: { user: true, transactions: true }, // Include related user and transactions data
+export async function getAllRequest(): Promise<Request[]> {
+  const request = prisma.request.findMany({
+    include: { user: true }, // Include related user and transactions data
   });
+  return request;
 }

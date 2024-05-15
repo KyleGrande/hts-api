@@ -1,81 +1,102 @@
+// src/controllers/request.controller.ts
+
 import { Request, Response, NextFunction } from "express";
 import * as requestService from "../services/request.service"; // Make sure path is correct
 
-export function createRequest(
+export async function createRequestController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const { userId, status, arrivalTime, departureTime, bid, type } = req.body;
-  requestService
-    .createRequest(
-      userId,
+): Promise<void> {
+  try {
+    const {
+      userid,
       status,
+      type,
+      arrivalTime,
+      departureTime,
+      relist,
+      location,
+      bid,
+    } = req.body;
+    const request = await requestService.createRequest(
+      userid,
+      status,
+      type,
       new Date(arrivalTime),
       new Date(departureTime),
-      bid,
-      type
-    )
-    .then((request) => res.status(201).json(request))
-    .catch(next);
+      relist,
+      location,
+      bid
+    );
+    res.status(201).json(request);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function getRequestById(
+export async function getRequestByIdController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  requestService
-    .getRequestById(id)
-    .then((request) => {
-      if (request) {
-        res.json(request);
-      } else {
-        res.status(404).send("Request not found");
-      }
-    })
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    const request = await requestService.getRequestById(id);
+    if (request) {
+      res.json(request);
+    } else {
+      res.status(404).send("Request not found");
+    }
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function updateRequest(
+export async function updateRequestByIdController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  const { status, arrivalTime, departureTime, bid, type } = req.body;
-  requestService
-    .updateRequest(id, {
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    const { status, arrivalTime, departureTime, bid, type } = req.body;
+    const updatedRequest = await requestService.updateRequestById(id, {
       status,
       arrivalTime: new Date(arrivalTime),
       departureTime: new Date(departureTime),
       bid,
       type,
-    })
-    .then((request) => res.json(request))
-    .catch(next);
+    });
+    res.json(updatedRequest);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function deleteRequest(
+export async function deleteRequestController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  requestService
-    .deleteRequest(id)
-    .then(() => res.status(204).send())
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    await requestService.deleteRequest(id);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function listRequests(
+export async function getAllRequestsController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  requestService
-    .listRequests()
-    .then((requests) => res.json(requests))
-    .catch(next);
+): Promise<void> {
+  try {
+    const requests = await requestService.getAllRequest();
+    res.json(requests);
+  } catch (error) {
+    next(error);
+  }
 }

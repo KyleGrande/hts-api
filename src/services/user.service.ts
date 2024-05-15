@@ -1,8 +1,10 @@
+// src/services/user.service.ts
+
 import { PrismaClient, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export function createUser(
+export async function createUser(
   email: string,
   name?: string,
   balance?: number
@@ -12,13 +14,13 @@ export function createUser(
   });
 }
 
-export function findUserById(id: number): Promise<User | null> {
+export async function findUserById(id: number): Promise<User | null> {
   return prisma.user.findUnique({
     where: { id },
   });
 }
 
-export function updateUser(
+export async function updateUser(
   id: number,
   email?: string,
   name?: string,
@@ -30,12 +32,12 @@ export function updateUser(
   });
 }
 
-export function deleteUser(id: number): Promise<User> {
+export async function deleteUser(id: number): Promise<User> {
   return prisma.user.delete({
     where: { id },
   });
 }
 
-export function listUsers(): Promise<User[]> {
+export async function listUsers(): Promise<User[]> {
   return prisma.user.findMany();
 }

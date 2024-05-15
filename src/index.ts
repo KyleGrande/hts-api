@@ -1,16 +1,13 @@
 // src/index.ts
-// Importing necessary libraries and middleware
-import express, { Application, Request, Response, NextFunction } from "express";
-import { json, urlencoded } from "body-parser";
+
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import { config } from "./config/config";
+import { json, urlencoded } from "body-parser";
 
 import { PrismaClient } from "@prisma/client";
+import { config } from "./config/config";
 
-import userRoutes from "./routes/user.routes";
-import transactionRoutes from "./routes/transaction.routes";
-import parkingSpotRoutes from "./routes/spot.routes";
-import requestRoutes from "./routes/request.routes";
+import router from "./routes/router";
 import errorHandler from "./middleware/errorHandler";
 
 const app: Application = express();
@@ -26,11 +23,8 @@ app.get("/", (req: Request, res: Response) => {
   res.status(200).send("Server is up and running!");
 });
 
-// Route handlers
-app.use("/users", userRoutes);
-app.use("/transactions", transactionRoutes);
-app.use("/parkingspots", parkingSpotRoutes);
-app.use("/requests", requestRoutes);
+// Hook up the router
+app.use("/api", router);
 
 // Error handling middleware usage
 app.use(errorHandler);

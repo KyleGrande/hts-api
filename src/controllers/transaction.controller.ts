@@ -1,77 +1,92 @@
-import { Request, Response, NextFunction } from "express";
-import * as transactionService from "../services/transaction.service"; // Ensure path is correct
+// src/controllers/transaction.controller.ts
 
-export function createTransaction(
+import { Request, Response, NextFunction } from "express";
+import * as transactionService from "../services/transaction.service";
+
+export async function createTransactionController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const { amount, type, sellerId, buyerId, status, requestId, parkingSpotId } =
-    req.body;
-  transactionService
-    .createTransaction(
+): Promise<void> {
+  try {
+    const { amount, type, sellerId, buyerId, status, matchId } = req.body;
+    const transaction = await transactionService.createTransaction(
       amount,
       type,
       sellerId,
       buyerId,
       status,
-      requestId,
-      parkingSpotId
-    )
-    .then((transaction) => res.status(201).json(transaction))
-    .catch(next);
+      matchId
+    );
+    res.status(201).json(transaction);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function getTransactionById(
+export async function getTransactionByIdController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  transactionService
-    .getTransactionById(id)
-    .then((transaction) => {
-      if (transaction) {
-        res.json(transaction);
-      } else {
-        res.status(404).send("Transaction not found");
-      }
-    })
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    const transaction = await transactionService.getTransactionById(id);
+    if (transaction) {
+      res.json(transaction);
+    } else {
+      res.status(404).send("Transaction not found");
+    }
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function updateTransaction(
+export async function updateTransactionByIdController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  const { amount, type, status, requestId, parkingSpotId } = req.body;
-  transactionService
-    .updateTransaction(id, { amount, type, status, requestId, parkingSpotId })
-    .then((transaction) => res.json(transaction))
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    const { amount, type, paymentType, sellerId, buyerId, matchId } = req.body;
+    const transaction = await transactionService.updateTransactionById(id, {
+      amount,
+      type,
+      paymentType,
+      sellerId,
+      buyerId,
+      matchId,
+    });
+    res.json(transaction);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function deleteTransaction(
+export async function deleteTransactionController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  const id = Number(req.params.id);
-  transactionService
-    .deleteTransaction(id)
-    .then(() => res.status(204).send())
-    .catch(next);
+): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+    await transactionService.deleteTransaction(id);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 }
 
-export function listTransactions(
+export async function getAllTransactionsController(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
-  transactionService
-    .listTransactions()
-    .then((transactions) => res.json(transactions))
-    .catch(next);
+): Promise<void> {
+  try {
+    const transactions = await transactionService.getAllTransactions();
+    res.json(transactions);
+  } catch (error) {
+    next(error);
+  }
 }
