@@ -51,7 +51,7 @@ export const prisma = new PrismaClient().$extends({
         const listing: MyListing[] = await prisma.$queryRaw`
               INSERT INTO "Listing" (userid, status, availabilitystart, price, region, subregion, location)
               VALUES (${userId}, ${status}::"ListingStatus", ${availabilityStart}, ${price}, ${region}, ${subregion}, ST_GeomFromText(${locationWKT}, 4326))
-              RETURNING id, userid, status, availabilityStart, price, region, subregion, location::text as location`;
+              RETURNING id, userid, status, availabilitystart, price, region, subregion, location::text as location`;
 
         listing[0].price = parseFloat(listing[0].price.toFixed(2)) as unknown as number;
 
@@ -59,9 +59,10 @@ export const prisma = new PrismaClient().$extends({
         const bestMatch = await findBestMatch(location, availabilityStart);
 
         if (bestMatch) {
+          console.log("bestMatch", bestMatch);
           // Create a match for the best request
           await prisma.$queryRaw`
-            INSERT INTO "Match" (requestId, listingId, matchedDate, distance)
+            INSERT INTO "Match" ("requestId", "listingId", "matchedDate", "distance")
             VALUES (${bestMatch.id}, ${listing[0].id}, NOW(), ${bestMatch.distance})
           `;
         }
@@ -71,6 +72,7 @@ export const prisma = new PrismaClient().$extends({
     },
   },
 });
+
 
 // old createParkingSpot function
 export async function createParkingSpotUsingRawSQL(
