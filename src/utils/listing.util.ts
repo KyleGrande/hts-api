@@ -2,6 +2,7 @@
 
 import { ListingStatus, PrismaClient } from "@prisma/client";
 import { MyLocation, MyListing } from "../interfaces/types";
+import { findBestMatch } from "./bestmatch.util";
 // export const prisma = new PrismaClient().$extends({
 //   model: {
 //     listing: {
@@ -54,28 +55,8 @@ export const prisma = new PrismaClient().$extends({
 
         listing[0].price = parseFloat(listing[0].price.toFixed(2)) as unknown as number;
 
-        // Check for relevant requests within 1/4 mile
-        const relevantRequests: any[] = await prisma.$queryRaw`
-          SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, arrivaltime
-          FROM "Request"
-          WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
-          AND status = 'Searching'::"RequestStatus"
-        `;
-
-        // Find the most relevant request based on distance and time similarity
-        let bestMatch = null;
-        let bestScore = Number.MAX_VALUE;
-
-        for (const request of relevantRequests) {
-          const distanceScore = request.distance;
-          const timeDifference = Math.abs(new Date(request.arrivaltime).getTime() - availabilityStart.getTime());
-          const score = distanceScore + timeDifference;
-
-          if (score < bestScore) {
-            bestScore = score;
-            bestMatch = request;
-          }
-        }
+        // Find the most relevant request using the separate function
+        const bestMatch = await findBestMatch(location, availabilityStart);
 
         if (bestMatch) {
           // Create a match for the best request
