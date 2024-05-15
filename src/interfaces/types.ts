@@ -23,6 +23,7 @@ export type MyListing = {
 };
 
 export type MyRequest = {
+  id: number;
   userId: number;
   status: string;
   type: string;
