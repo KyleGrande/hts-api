@@ -10,6 +10,7 @@ export async function createRequest(
   type: RequestType,
   arrivalTime: Date,
   departureTime: Date,
+  relist: boolean,
   location: MyLocation,
   bid: number
 ): Promise<MyRequest> {
@@ -20,6 +21,7 @@ export async function createRequest(
       type,
       arrivalTime,
       departureTime,
+      relist,
       location,
       bid
     );

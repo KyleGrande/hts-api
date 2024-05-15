@@ -5,18 +5,16 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
-
-  
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
   extensions = [postgis]
-
 }
+
 enum ListingStatus {
   Available
   Occupied
@@ -51,67 +49,69 @@ enum PaymentType {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-  name         String?
-  createdAt    DateTime      @default(now())
-  balance      Decimal       @db.Money @default(0.00)
-  requests     Request[]
-  listings Listing[]
-  soldTransactions Transaction[] @relation("TransactionSeller")
+  id                 Int           @id @unique @default(autoincrement())
+  email              String        @unique
+  name               String?
+  createdAt          DateTime      @default(now())
+  balance            Decimal       @default(0.00) @db.Money
+  requests           Request[]
+  listings           Listing[]
+  soldTransactions   Transaction[] @relation("TransactionSeller")
   boughtTransactions Transaction[] @relation("TransactionBuyer")
 }
 
-
 model Listing {
-  id     Int    @id @default(autoincrement())
-  userid Int
-  status ListingStatus
+  id                Int                                   @id @unique @default(autoincrement())
+  userid            Int
+  status            ListingStatus
   availabilitystart DateTime
-  createdAt DateTime @default(now())
-  price Decimal @db.Decimal(10, 2)
-  region String?
-  subregion String?
-  location Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))
+  createdAt         DateTime                              @default(now())
+  price             Decimal                               @db.Decimal(10, 2)
+  region            String?
+  subregion         String?
+  location          Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))
+  user              User                                  @relation(fields: [userid], references: [id], onDelete: Cascade)
+  match             Match?
+
   @@index([location], name: "location_idx", type: Gist)
-  user   User   @relation(fields: [userid], references: [id], onDelete: Cascade)
-  matches Match[]
 }
 
 model Request {
-  id            Int      @id @default(autoincrement())
+  id            Int                                   @id @unique @default(autoincrement())
   userid        Int
   status        RequestStatus
   type          RequestType
-  createdAt     DateTime @default(now())
+  createdAt     DateTime                              @default(now())
   arrivaltime   DateTime
   departuretime DateTime
+  relist        Boolean                               @default(true)
   location      Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))
-  bid           Decimal  @db.Decimal(10, 2)
-  user          User     @relation(fields: [userid], references: [id], onDelete: Cascade)
-  matches       Match[]
+  bid           Decimal                               @db.Decimal(10, 2)
+  user          User                                  @relation(fields: [userid], references: [id], onDelete: Cascade)
+  match         Match?
 }
 
 model Match {
-  id           Int        @id @default(autoincrement())
-  requestId    Int
-  listingId    Int
-  matchedDate  DateTime   @default(now())
-  request      Request    @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  listing      Listing    @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  id           Int           @id @unique @default(autoincrement())
+  requestId    Int           @unique
+  listingId    Int           @unique
+  matchedDate  DateTime      @default(now())
+  distance     Float
+  request      Request       @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  listing      Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 }
 
 model Transaction {
-  id           Int      @id @default(autoincrement())
-  amount       Decimal  @db.Decimal(10, 2)
-  type         TransactionType
-  paymentType  PaymentType
-  sellerId     Int
-  buyerId      Int
-  matchId      Int
-  createdAt    DateTime @default(now())
-  seller       User     @relation("TransactionSeller", fields: [sellerId], references: [id], onDelete: Cascade)
-  buyer        User     @relation("TransactionBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
-  match        Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  id          Int             @id @unique @default(autoincrement())
+  amount      Decimal         @db.Decimal(10, 2)
+  type        TransactionType
+  paymentType PaymentType
+  sellerId    Int
+  buyerId     Int
+  matchId     Int
+  createdAt   DateTime        @default(now())
+  seller      User            @relation("TransactionSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer       User            @relation("TransactionBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  match       Match           @relation(fields: [matchId], references: [id], onDelete: Cascade)
 }

@@ -1,5 +1,5 @@
 // interfaces/types.ts
-
+import { Transaction } from "@prisma/client";
 export interface Config {
   environment: string;
   port: string;
@@ -11,6 +11,7 @@ export interface MyLocation {
 }
 
 export type MyListing = {
+  id: number;
   userId: number;
   status: string;
   availabilityTime: boolean;
@@ -22,13 +23,26 @@ export type MyListing = {
 };
 
 export type MyRequest = {
+  id: number;
   userId: number;
   status: string;
   type: string;
   arrivalTime: Date;
   departureTime: Date;
+  relist: boolean;
   location: MyLocation;
   bid: number;
+};
+
+export type MyMatch = {
+  matchId: number;
+  requestId: number;
+  listingId: number;
+  matchedDate: Date;
+  distance: number;
+  request: MyRequest;
+  listing: MyListing;
+  transactions: Transaction[];
 };
 
 enum ListingStatus {
