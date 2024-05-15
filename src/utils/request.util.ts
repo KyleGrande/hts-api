@@ -36,7 +36,7 @@ export const prisma = new PrismaClient().$extends({
         if (bestMatch) {
           // Create a match for the best listing
           await prisma.$queryRaw`
-            INSERT INTO "Match" (requestId, listingId, matchedDate, distance)
+            INSERT INTO "Match" ("requestId", "listingId", "matchedDate", "distance")
             VALUES (${request[0].id}, ${bestMatch.id}, NOW(), ${bestMatch.distance})
           `;
         }
