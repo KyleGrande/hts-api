@@ -59,7 +59,6 @@ export const prisma = new PrismaClient().$extends({
         const bestMatch = await findBestMatch(location, availabilityStart);
 
         if (bestMatch) {
-          console.log("bestMatch", bestMatch);
           // Create a match for the best request
           await prisma.$queryRaw`
             INSERT INTO "Match" ("requestId", "listingId", "matchedDate", "distance")
