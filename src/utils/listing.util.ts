@@ -2,7 +2,7 @@
 
 import { ListingStatus, PrismaClient } from "@prisma/client";
 import { MyLocation, MyListing } from "../interfaces/types";
-import { findBestMatch } from "./bestmatch.util";
+import { findBestMatch } from "./matchForListing";
 // export const prisma = new PrismaClient().$extends({
 //   model: {
 //     listing: {
