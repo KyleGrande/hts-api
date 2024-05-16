@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
+    "lint": "eslint --ext .ts",
     "start": "NODE_ENV=prod ts-node src/index.js",
     "dev": "NODE_ENV=dev ts-node src/index.ts",
     "test": "NODE_ENV=test jest",
