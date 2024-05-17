@@ -2,7 +2,7 @@
 
 import { RequestStatus, RequestType, PrismaClient } from "@prisma/client";
 import { MyLocation, MyRequest } from "../interfaces/types";
-import { findBestMatchForRequest } from "./matchForRequest.util"; // Import the new utility function
+import { findBestMatch } from "./match.util";
 
 export const prisma = new PrismaClient().$extends({
   model: {
@@ -26,12 +26,10 @@ export const prisma = new PrismaClient().$extends({
               VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${arrivalTime}, ${departureTime}, ${relist}, ST_GeomFromText(${locationWKT}, 4326), ${bid})
               RETURNING id, userid, status, type, arrivaltime, departuretime, relist, location::text as location, bid`;
 
-        request[0].bid = parseFloat(
-          request[0].bid.toFixed(2)
-        ) as unknown as number;
+        request[0].bid = parseFloat(request[0].bid.toFixed(2)) as unknown as number;
 
-        // Find the most relevant listing using the separate function
-        const bestMatch = await findBestMatchForRequest(location, arrivalTime);
+        // Find the most relevant listing using the generic function
+        const bestMatch = await findBestMatch({ location, date: arrivalTime, entityType: 'request' });
 
         if (bestMatch) {
           // Create a match for the best listing

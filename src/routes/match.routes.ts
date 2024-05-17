@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.get("/", matchController.getAllMatchesController); // For testing
 router.get("/:id", matchController.getMatchByIdController);
+router.delete("/:id", matchController.deleteMatchByIdController);
 
 export default router;

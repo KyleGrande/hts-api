@@ -33,3 +33,17 @@ export async function getMatchByIdController(
     next(error);
   }
 };
+
+export async function deleteMatchByIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const id = parseInt(req.params.id);
+    await matchService.deleteMatchByIdService(id);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+}
