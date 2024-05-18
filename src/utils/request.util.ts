@@ -48,7 +48,7 @@ export const prisma = new PrismaClient().$extends({
         const bestMatch = await findBestMatch({
           location,
           starttime: starttime,
-          entityType: "request",
+          searchType: "Listing",
           userId,
         });
 

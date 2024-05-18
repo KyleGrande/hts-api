@@ -1,4 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+// src/utils/match.util.ts
+
+import { PrismaClient, Prisma } from "@prisma/client";
 import { MyBestMatch, MyLocation, MyMatch } from "../interfaces/types";
 
 const prisma = new PrismaClient();
@@ -6,40 +8,34 @@ const prisma = new PrismaClient();
 interface MatchParams {
   location: MyLocation;
   starttime: Date;
-  entityType: "listing" | "request";
+  searchType: "Listing" | "Request";
   userId: number;
 }
 
 export async function findBestMatch({
   location,
   starttime,
-  entityType,
+  searchType,
   userId,
 }: MatchParams): Promise<MyBestMatch | null> {
-  if (!["request", "listing"].includes(entityType)) {
+  if (!["Listing", "Request"].includes(searchType)) {
     throw new Error("Invalid entityType. Must be 'listing' or 'request'.");
   }
 
   const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
-
-  const table = entityType === "request" ? "Listing" : "Request";
+  const table = searchType;
   const statusCondition =
-    entityType === "request"
+    searchType === "Listing"
       ? `'Available'::"ListingStatus"`
       : `'Searching'::"RequestStatus"`;
 
-  // Construct the query string with dynamic table name, date field, and userId exclusion
-  const queryString = `
-    SELECT id, ST_Distance(location, ST_GeomFromText('${locationWKT}', 4326)) as distance, starttime as date
-    FROM "${table}"
-    WHERE ST_DWithin(location, ST_GeomFromText('${locationWKT}', 4326), 402.336)
-    AND status = ${statusCondition}
+  const query = await prisma.$queryRaw<MyBestMatch[]>`
+    SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, starttime as date
+    FROM ${Prisma.raw(`"${table}"`)}
+    WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
+    AND status = ${Prisma.raw(statusCondition)}
     AND userid <> ${userId}
   `;
-
-  const query: MyBestMatch[] = await prisma.$queryRawUnsafe<MyBestMatch[]>(
-    queryString
-  );
 
   let bestMatch: MyBestMatch | null = null;
   let bestScore = Number.MAX_VALUE;
