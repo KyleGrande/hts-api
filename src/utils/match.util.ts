@@ -31,7 +31,7 @@
 // });
 
 import { PrismaClient } from "@prisma/client";
-import { MyLocation, MyMatch, MyBestMatch } from "../interfaces/types";
+import { MyLocation, MyMatch } from "../interfaces/types";
 
 const prisma = new PrismaClient();
 
@@ -46,8 +46,11 @@ export async function findBestMatch({
   date,
   entityType,
 }: MatchParams): Promise<MyMatch | null> {
-  const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
+  if (!["request", "listing"].includes(entityType)) {
+    throw new Error("Invalid entityType. Must be 'listing' or 'request'.");
+  }
 
+  const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
   const table = entityType === "request" ? "Listing" : "Request";
   const statusCondition =
     entityType === "request"
@@ -56,18 +59,12 @@ export async function findBestMatch({
   const dateField =
     entityType === "request" ? "availabilitystart" : "arrivaltime";
 
-  let query: MyBestMatch[] = prisma.$queryRaw`
+  const relevantEntities = await prisma.$queryRaw<MyMatch[]>`
     SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, ${dateField} as date
     FROM "${table}"
     WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
     AND status = ${statusCondition}
   `;
-
-  if (!["request", "listing"].includes(entityType)) {
-    throw new Error("Invalid entityType. Must be 'listing' or 'request'.");
-  }
-
-  const relevantEntities: MyMatch[] = (await query) as any[];
 
   let bestMatch: MyMatch | null = null;
   let bestScore = Number.MAX_VALUE;
