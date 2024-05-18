@@ -1,5 +1,3 @@
-// src/util/match.util.ts
-
 import { PrismaClient } from "@prisma/client";
 import { MyLocation, MyMatch } from "../interfaces/types";
 
@@ -21,6 +19,7 @@ export async function findBestMatch({
   }
 
   const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
+
   const table = entityType === "request" ? "Listing" : "Request";
   const statusCondition =
     entityType === "request"
@@ -29,17 +28,23 @@ export async function findBestMatch({
   const dateField =
     entityType === "request" ? "availabilitystart" : "arrivaltime";
 
-  const relevantEntities = await prisma.$queryRaw<MyMatch[]>`
-    SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, ${dateField} as date
+  // Construct the query string with dynamic table name and date field
+  const queryString = `
+    SELECT id, ST_Distance(location, ST_GeomFromText($1, 4326)) as distance, ${dateField} as date
     FROM "${table}"
-    WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
+    WHERE ST_DWithin(location, ST_GeomFromText($1, 4326), 402.336)
     AND status = ${statusCondition}
   `;
+
+  const query: MyMatch[] = await prisma.$queryRawUnsafe<MyMatch[]>(
+    queryString,
+    locationWKT
+  );
 
   let bestMatch: MyMatch | null = null;
   let bestScore = Number.MAX_VALUE;
 
-  for (const entity of relevantEntities) {
+  for (const entity of query) {
     const distanceScore = entity.distance;
     const timeDifference = Math.abs(
       new Date(entity.id).getTime() - date.getTime()
