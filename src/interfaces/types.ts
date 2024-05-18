@@ -21,6 +21,11 @@ export type MyListing = {
   subregion: String;
   location: MyLocation;
 };
+export type bestMatch = {
+  id: number;
+  distance: number;
+  availabilityStart: Date;
+};
 
 export type MyRequest = {
   id: number;

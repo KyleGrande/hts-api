@@ -1,7 +1,13 @@
 // src/utils/request.util.ts
 
 import { RequestStatus, RequestType, PrismaClient } from "@prisma/client";
-import { MyLocation, MyRequest } from "../interfaces/types";
+import {
+  MyLocation,
+  MyMatch,
+  MyRequest,
+  MyListing,
+  bestMatch,
+} from "../interfaces/types";
 import { findBestMatch } from "./match.util";
 
 export const prisma = new PrismaClient().$extends({
@@ -33,7 +39,7 @@ export const prisma = new PrismaClient().$extends({
 
         if (bestMatch) {
           // Create a match for the best listing
-          await prisma.$queryRaw`
+          const result: MyMatch = await prisma.$queryRaw`
             INSERT INTO "Match" ("requestId", "listingId", "matchedDate", "distance")
             VALUES (${request[0].id}, ${bestMatch.id}, NOW(), ${bestMatch.distance})
           `;
