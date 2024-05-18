@@ -64,7 +64,7 @@ model Listing {
   id                Int                                   @id @unique @default(autoincrement())
   userid            Int
   status            ListingStatus
-  availabilitystart DateTime
+  starttime         DateTime
   createdAt         DateTime                              @default(now())
   price             Decimal                               @db.Decimal(10, 2)
   region            String?
@@ -82,7 +82,7 @@ model Request {
   status        RequestStatus
   type          RequestType
   createdAt     DateTime                              @default(now())
-  arrivaltime   DateTime
+  starttime   DateTime
   departuretime DateTime
   relist        Boolean                               @default(true)
   location      Unsupported("geometry(Point, 4326)")? @default(dbgenerated("null"))

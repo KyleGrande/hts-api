@@ -14,7 +14,7 @@ export type MyListing = {
   id: number;
   userId: number;
   status: string;
-  availabilityTime: boolean;
+  starttime: Date;
   departureTime: Date;
   price: number;
   region: String;
@@ -32,7 +32,7 @@ export type MyRequest = {
   userId: number;
   status: string;
   type: string;
-  arrivalTime: Date;
+  starttime: Date;
   departureTime: Date;
   relist: boolean;
   location: MyLocation;
@@ -45,9 +45,9 @@ export type MyMatch = {
   listingId: number;
   matchedDate: Date;
   distance: number;
-  request: MyRequest;
-  listing: MyListing;
-  transactions: Transaction[];
+  // request: MyRequest;
+  // listing: MyListing;
+  // transactions: Transaction[];
 };
 
 enum ListingStatus {

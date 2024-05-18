@@ -9,19 +9,12 @@ export async function createListingController(
   next: NextFunction
 ): Promise<void> {
   try {
-    const {
-      userId,
-      status,
-      availabilityStart,
-      price,
-      region,
-      subregion,
-      location,
-    } = req.body;
+    const { userId, status, starttime, price, region, subregion, location } =
+      req.body;
     const parkingSpot = await listingService.createListing(
       userId,
       status,
-      availabilityStart,
+      starttime,
       price,
       region,
       subregion,

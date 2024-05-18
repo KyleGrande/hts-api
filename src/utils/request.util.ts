@@ -9,6 +9,8 @@ import {
   MyBestMatch,
 } from "../interfaces/types";
 import { findBestMatch } from "./match.util";
+import { createMatchService } from "../services/match.service";
+import { updateRequestById } from "../services/request.service";
 
 export const prisma = new PrismaClient().$extends({
   model: {
@@ -17,7 +19,7 @@ export const prisma = new PrismaClient().$extends({
         userId: number,
         status: RequestStatus,
         type: RequestType,
-        arrivalTime: Date,
+        starttime: Date,
         departureTime: Date,
         relist: boolean,
         location: MyLocation,
@@ -25,12 +27,12 @@ export const prisma = new PrismaClient().$extends({
       ) {
         console.log(relist);
         const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
-        arrivalTime = new Date(arrivalTime);
+        starttime = new Date(starttime);
         departureTime = new Date(departureTime); // Ensure departureTime is a valid Date object
         const request: MyRequest[] = await prisma.$queryRaw`
-              INSERT INTO "Request" (userid, status, type, arrivaltime, departuretime, relist, location, bid)
-              VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${arrivalTime}, ${departureTime}, ${relist}, ST_GeomFromText(${locationWKT}, 4326), ${bid})
-              RETURNING id, userid, status, type, arrivaltime, departuretime, relist, location::text as location, bid`;
+              INSERT INTO "Request" (userid, status, type, starttime, departuretime, relist, location, bid)
+              VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${starttime}, ${departureTime}, ${relist}, ST_GeomFromText(${locationWKT}, 4326), ${bid})
+              RETURNING id, userid, status, type, starttime, departuretime, relist, location::text as location, bid`;
 
         request[0].bid = parseFloat(
           request[0].bid.toFixed(2)
@@ -39,16 +41,14 @@ export const prisma = new PrismaClient().$extends({
         // Find the most relevant listing using the generic function
         const bestMatch = await findBestMatch({
           location,
-          date: arrivalTime,
+          starttime: starttime,
           entityType: "request",
         });
 
         if (bestMatch) {
-          // Create a match for the best listing
-          const result: MyMatch = await prisma.$queryRaw`
-            INSERT INTO "Match" ("requestId", "listingId", "matchedDate", "distance")
-            VALUES (${request[0].id}, ${bestMatch.id}, NOW(), ${bestMatch.distance})
-          `;
+          console.log("bestMatch", bestMatch);
+          createMatchService(request[0].id, bestMatch.id, bestMatch.distance);
+          updateRequestById(request[0].id, { status: RequestStatus.Matched });
         }
 
         return request[0];
@@ -56,27 +56,3 @@ export const prisma = new PrismaClient().$extends({
     },
   },
 });
-
-// async findListingMatch(
-//   userId: number,
-//   status: RequestStatus,
-//   type: RequestType,
-//   arrivalTime: Date,
-//   departureTime: Date,
-//   location: MyLocation,
-//   bid: number
-// ) {
-//   const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
-//   arrivalTime = new Date(arrivalTime);
-//   departureTime = new Date(departureTime); // Ensure departureTime is a valid Date object
-//   const request: MyRequest[] = await prisma.$queryRaw`
-//         INSERT INTO "Request" (userid, status, type, arrivaltime, departuretime, location, bid)
-//         VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${arrivalTime}, ${departureTime}, ST_GeomFromText(${locationWKT}, 4326), ${bid})
-//         RETURNING id, userid, status, type, arrivaltime, departuretime, location::text as location, bid`;
-
-//   request[0].bid = parseFloat(
-//     request[0].bid.toFixed(2)
-//   ) as unknown as number;
-
-//   return request[0];
-// },
