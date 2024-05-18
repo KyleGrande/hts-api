@@ -38,39 +38,46 @@ const prisma = new PrismaClient();
 interface MatchParams {
   location: MyLocation;
   date: Date;
-  entityType: 'listing' | 'request';
+  entityType: "listing" | "request";
 }
 
-export async function findBestMatch({ location, date, entityType }: MatchParams) {
+export async function findBestMatch({
+  location,
+  date,
+  entityType,
+}: MatchParams) {
   const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
 
   let query;
-  if (entityType === 'request') {
-    query = prisma.$queryRaw`
-      SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, availabilitystart as date
-      FROM "Listing"
-      WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
-      AND status = 'Available'::"ListingStatus"
-    `;
-  } else if (entityType === 'listing') {
-    query = prisma.$queryRaw`
-      SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, arrivaltime as date
-      FROM "Request"
-      WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
-      AND status = 'Searching'::"RequestStatus"
-    `;
-  } else {
+  const table = entityType === "request" ? "Listing" : "Request";
+  const statusCondition =
+    entityType === "request"
+      ? `'Available'::"ListingStatus"`
+      : `'Searching'::"RequestStatus"`;
+  const dateField =
+    entityType === "request" ? "availabilitystart" : "arrivaltime";
+
+  query = prisma.$queryRaw`
+    SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, ${dateField} as date
+    FROM "${table}"
+    WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
+    AND status = ${statusCondition}
+  `;
+
+  if (!["request", "listing"].includes(entityType)) {
     throw new Error("Invalid entityType. Must be 'listing' or 'request'.");
   }
 
-  const relevantEntities: any[] = await query as any[];
+  const relevantEntities: any[] = (await query) as any[];
 
   let bestMatch = null;
   let bestScore = Number.MAX_VALUE;
 
   for (const entity of relevantEntities) {
     const distanceScore = entity.distance;
-    const timeDifference = Math.abs(new Date(entity.date).getTime() - date.getTime());
+    const timeDifference = Math.abs(
+      new Date(entity.date).getTime() - date.getTime()
+    );
     const score = distanceScore + timeDifference;
 
     if (score < bestScore) {
