@@ -31,7 +31,7 @@
 // });
 
 import { PrismaClient } from "@prisma/client";
-import { MyLocation } from "../interfaces/types";
+import { MyLocation, MyMatch, bestMatch } from "../interfaces/types";
 
 const prisma = new PrismaClient();
 
@@ -68,15 +68,15 @@ export async function findBestMatch({
     throw new Error("Invalid entityType. Must be 'listing' or 'request'.");
   }
 
-  const relevantEntities: any[] = (await query) as any[];
+  const relevantEntities: MyMatch[] = (await query) as any[];
 
-  let bestMatch = null;
+  let bestMatch: MyMatch | null = null;
   let bestScore = Number.MAX_VALUE;
 
   for (const entity of relevantEntities) {
     const distanceScore = entity.distance;
     const timeDifference = Math.abs(
-      new Date(entity.date).getTime() - date.getTime()
+      new Date(entity.id).getTime() - date.getTime()
     );
     const score = distanceScore + timeDifference;
 

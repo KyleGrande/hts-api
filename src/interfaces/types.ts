@@ -40,7 +40,7 @@ export type MyRequest = {
 };
 
 export type MyMatch = {
-  matchId: number;
+  id: number;
   requestId: number;
   listingId: number;
   matchedDate: Date;
