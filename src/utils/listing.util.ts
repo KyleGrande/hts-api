@@ -2,7 +2,7 @@
 
 import { ListingStatus, PrismaClient } from "@prisma/client";
 import { MyLocation, MyListing } from "../interfaces/types";
-import { findBestMatch } from "./matchForListing";
+import { findBestMatch } from "./match.util";
 // export const prisma = new PrismaClient().$extends({
 //   model: {
 //     listing: {
@@ -55,8 +55,8 @@ export const prisma = new PrismaClient().$extends({
 
         listing[0].price = parseFloat(listing[0].price.toFixed(2)) as unknown as number;
 
-        // Find the most relevant request using the separate function
-        const bestMatch = await findBestMatch(location, availabilityStart);
+        // Find the most relevant request using the generic function
+        const bestMatch = await findBestMatch({ location, date: availabilityStart, entityType: 'listing' });
 
         if (bestMatch) {
           // Create a match for the best request
