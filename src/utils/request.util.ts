@@ -1,6 +1,11 @@
 // src/utils/request.util.ts
 
-import { RequestStatus, RequestType, PrismaClient } from "@prisma/client";
+import {
+  RequestStatus,
+  RequestType,
+  PrismaClient,
+  ListingStatus,
+} from "@prisma/client";
 import {
   MyLocation,
   MyMatch,
@@ -11,6 +16,7 @@ import {
 import { findBestMatch } from "./match.util";
 import { createMatchService } from "../services/match.service";
 import { updateRequestById } from "../services/request.service";
+import { updateListingById } from "../services/listing.service";
 
 export const prisma = new PrismaClient().$extends({
   model: {
@@ -43,12 +49,14 @@ export const prisma = new PrismaClient().$extends({
           location,
           starttime: starttime,
           entityType: "request",
+          userId,
         });
 
         if (bestMatch) {
           console.log("bestMatch", bestMatch);
           createMatchService(request[0].id, bestMatch.id, bestMatch.distance);
           updateRequestById(request[0].id, { status: RequestStatus.Matched });
+          updateListingById(bestMatch.id, { status: ListingStatus.Matched });
         }
 
         return request[0];

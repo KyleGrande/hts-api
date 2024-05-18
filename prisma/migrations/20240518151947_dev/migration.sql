@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
 -- CreateEnum
-CREATE TYPE "ListingStatus" AS ENUM ('Available', 'Occupied', 'Reserved', 'Unavailable');
+CREATE TYPE "ListingStatus" AS ENUM ('Available', 'Occupied', 'Matched', 'Unavailable');
 
 -- CreateEnum
 CREATE TYPE "RequestStatus" AS ENUM ('Completed', 'Cancelled', 'Matched', 'Searching');
