@@ -6,7 +6,7 @@ import {
   MyMatch,
   MyRequest,
   MyListing,
-  bestMatch,
+  MyBestMatch,
 } from "../interfaces/types";
 import { findBestMatch } from "./match.util";
 

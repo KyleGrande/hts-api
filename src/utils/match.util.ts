@@ -31,7 +31,7 @@
 // });
 
 import { PrismaClient } from "@prisma/client";
-import { MyLocation, MyMatch, bestMatch } from "../interfaces/types";
+import { MyLocation, MyMatch, MyBestMatch } from "../interfaces/types";
 
 const prisma = new PrismaClient();
 
@@ -45,10 +45,9 @@ export async function findBestMatch({
   location,
   date,
   entityType,
-}: MatchParams) {
+}: MatchParams): Promise<MyMatch | null> {
   const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
 
-  let query;
   const table = entityType === "request" ? "Listing" : "Request";
   const statusCondition =
     entityType === "request"
@@ -57,7 +56,7 @@ export async function findBestMatch({
   const dateField =
     entityType === "request" ? "availabilitystart" : "arrivaltime";
 
-  query = prisma.$queryRaw`
+  let query: MyBestMatch[] = prisma.$queryRaw`
     SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, ${dateField} as date
     FROM "${table}"
     WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
