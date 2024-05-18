@@ -13,7 +13,7 @@ export interface MyLocation {
 export type MyListing = {
   id: number;
   userId: number;
-  status: string;
+  status: Status;
   starttime: Date;
   departureTime: Date;
   price: number;
@@ -31,7 +31,7 @@ export type MyBestMatch = {
 export type MyRequest = {
   id: number;
   userId: number;
-  status: string;
+  status: Status;
   type: string;
   starttime: Date;
   departureTime: Date;
@@ -52,14 +52,7 @@ export type MyMatch = {
   // transactions: Transaction[];
 };
 
-enum ListingStatus {
-  Available,
-  Occupied,
-  Reserved,
-  Unavailable,
-}
-
-enum RequestStatus {
+enum Status {
   Completed,
   Cancelled,
   Matched,
