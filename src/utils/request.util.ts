@@ -57,6 +57,10 @@ export const prisma = new PrismaClient().$extends({
           createMatchService(request[0].id, bestMatch.id, bestMatch.distance);
           updateRequestById(request[0].id, { status: RequestStatus.Matched });
           updateListingById(bestMatch.id, { status: ListingStatus.Matched });
+          request[0].match = {
+            id: bestMatch.id,
+            distance: bestMatch.distance,
+          };
         }
 
         return request[0];

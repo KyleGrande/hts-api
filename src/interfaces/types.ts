@@ -20,11 +20,12 @@ export type MyListing = {
   region: String;
   subregion: String;
   location: MyLocation;
+  match?: MyBestMatch;
 };
 export type MyBestMatch = {
   id: number;
   distance: number;
-  availabilityStart: Date;
+  availabilityStart?: Date;
 };
 
 export type MyRequest = {
@@ -37,6 +38,7 @@ export type MyRequest = {
   relist: boolean;
   location: MyLocation;
   bid: number;
+  match?: MyBestMatch;
 };
 
 export type MyMatch = {

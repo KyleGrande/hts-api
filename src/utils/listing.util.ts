@@ -6,33 +6,6 @@ import { findBestMatch } from "./match.util";
 import { createMatchService } from "../services/match.service";
 import { updateListingById } from "../services/listing.service";
 import { updateRequestById } from "../services/request.service";
-// export const prisma = new PrismaClient().$extends({
-//   model: {
-//     listing: {
-//       async create(
-//         userId: number,
-//         status: ListingStatus,
-//         availabilityStart: Date,
-//         price: number,
-//         region: string,
-//         subregion: string,
-//         location: MyLocation
-//       ) {
-//         const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
-//         availabilityStart = new Date(availabilityStart); // Ensure departureTime is a valid Date object
-//         const listing: MyListing[] = await prisma.$queryRaw`
-//               INSERT INTO "Listing" (userid, status, availabilitystart, price, region, subregion, location)
-//               VALUES (${userId}, ${status}::"ListingStatus", ${availabilityStart}, ${price}, ${region}, ${subregion}, ST_GeomFromText(${locationWKT}, 4326))
-//               RETURNING id, userid, status, availabilityStart, price, region, subregion, location::text as location`;
-//         listing[0].price = parseFloat(
-//           listing[0].price.toFixed(2)
-//         ) as unknown as number;
-//         //parkingSpot[0].cost = parkingSpot[0].cost.toFixed(2);
-//         return listing[0];
-//       },
-//     },
-//   },
-// });
 export const prisma = new PrismaClient().$extends({
   model: {
     listing: {
@@ -75,8 +48,11 @@ export const prisma = new PrismaClient().$extends({
           createMatchService(bestMatch.id, listing[0].id, bestMatch.distance);
           updateListingById(listing[0].id, { status: ListingStatus.Occupied });
           updateRequestById(bestMatch.id, { status: RequestStatus.Matched });
+          listing[0].match = {
+            id: bestMatch.id,
+            distance: bestMatch.distance,
+          };
         }
-
         return listing[0];
       },
     },

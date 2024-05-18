@@ -54,6 +54,7 @@ export async function updateRequestById(
   const request = await prisma.request.update({
     where: { id },
     data,
+    include: { match: true }, // Include related match
   });
   return request;
 }
