@@ -1,6 +1,6 @@
 // src/util/listing.util.ts
 
-import { ListingStatus, PrismaClient, RequestStatus } from "@prisma/client";
+import { Status, PrismaClient } from "@prisma/client";
 import { MyLocation, MyListing } from "../interfaces/types";
 import { findBestMatch } from "./match.util";
 import { createMatchService } from "../services/match.service";
@@ -19,7 +19,7 @@ export const prisma = new PrismaClient().$extends({
         subregion: string,
         location: MyLocation
       ) {
-        if (status !== ListingStatus.Available) {
+        if (status !== Status.Searching) {
           throw new Error(
             "Listing status must be 'Available' to create a match."
           );

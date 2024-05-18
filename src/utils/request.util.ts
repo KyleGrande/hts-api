@@ -1,11 +1,6 @@
 // src/utils/request.util.ts
 
-import {
-  RequestStatus,
-  RequestType,
-  PrismaClient,
-  ListingStatus,
-} from "@prisma/client";
+import { RequestType, PrismaClient, Status } from "@prisma/client";
 import { MyLocation, MyRequest } from "../interfaces/types";
 import { findBestMatch } from "./match.util";
 import { createMatchService } from "../services/match.service";
@@ -17,7 +12,7 @@ export const prisma = new PrismaClient().$extends({
     request: {
       async create(
         userId: number,
-        status: RequestStatus,
+        status: Status,
         type: RequestType,
         starttime: Date,
         departureTime: Date,
@@ -31,7 +26,7 @@ export const prisma = new PrismaClient().$extends({
         departureTime = new Date(departureTime); // Ensure departureTime is a valid Date object
         const request: MyRequest[] = await prisma.$queryRaw`
               INSERT INTO "Request" (userid, status, type, starttime, departuretime, relist, location, bid)
-              VALUES (${userId}, ${status}::"RequestStatus", ${type}::"RequestType", ${starttime}, ${departureTime}, ${relist}, ST_GeomFromText(${locationWKT}, 4326), ${bid})
+              VALUES (${userId}, ${status}::"Status", ${type}::"RequestType", ${starttime}, ${departureTime}, ${relist}, ST_GeomFromText(${locationWKT}, 4326), ${bid})
               RETURNING id, userid, status, type, starttime, departuretime, relist, location::text as location, bid`;
 
         request[0].bid = parseFloat(
@@ -49,8 +44,8 @@ export const prisma = new PrismaClient().$extends({
         if (bestMatch) {
           console.log("bestMatch", bestMatch);
           createMatchService(request[0].id, bestMatch.id, bestMatch.distance);
-          updateRequestById(request[0].id, { status: RequestStatus.Matched });
-          updateListingById(bestMatch.id, { status: ListingStatus.Matched });
+          updateRequestById(request[0].id, { status: Status.Matched });
+          updateListingById(bestMatch.id, { status: Status.Matched });
           request[0].match = {
             id: bestMatch.id,
             distance: bestMatch.distance,
