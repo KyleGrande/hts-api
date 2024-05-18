@@ -1,14 +1,13 @@
 // src/services/match.service.ts
 
-import { PrismaClient } from "@prisma/client";
-import { MyMatch } from "../interfaces/types";
+import { PrismaClient, Match } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const createMatchService = async (
   requestId: number,
   listingId: number,
   distance: number
-): Promise<MyMatch> => {
+): Promise<Match> => {
   const newMatch = await prisma.match.create({
     data: {
       requestId,
