@@ -6,13 +6,7 @@ import {
   PrismaClient,
   ListingStatus,
 } from "@prisma/client";
-import {
-  MyLocation,
-  MyMatch,
-  MyRequest,
-  MyListing,
-  MyBestMatch,
-} from "../interfaces/types";
+import { MyLocation, MyRequest } from "../interfaces/types";
 import { findBestMatch } from "./match.util";
 import { createMatchService } from "../services/match.service";
 import { updateRequestById } from "../services/request.service";
