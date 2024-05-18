@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: my_backend_app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/mydatabase?schema=public
+    depends_on:
+      - db
+    networks:
+      - app-network
+    command: >
+      sh -c "
+      npx prisma migrate deploy &&
+      node dist/index.js
+      "
+
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: my_postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

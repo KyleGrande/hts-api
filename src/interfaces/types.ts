@@ -13,51 +13,46 @@ export interface MyLocation {
 export type MyListing = {
   id: number;
   userId: number;
-  status: string;
-  availabilityTime: boolean;
+  status: Status;
+  starttime: Date;
   departureTime: Date;
   price: number;
   region: String;
   subregion: String;
   location: MyLocation;
+  match?: MyBestMatch;
 };
-export type bestMatch = {
+export type MyBestMatch = {
   id: number;
   distance: number;
-  availabilityStart: Date;
+  availabilityStart?: Date;
 };
 
 export type MyRequest = {
   id: number;
   userId: number;
-  status: string;
+  status: Status;
   type: string;
-  arrivalTime: Date;
+  starttime: Date;
   departureTime: Date;
   relist: boolean;
   location: MyLocation;
   bid: number;
+  match?: MyBestMatch;
 };
 
 export type MyMatch = {
-  matchId: number;
+  id: number;
   requestId: number;
   listingId: number;
   matchedDate: Date;
   distance: number;
-  request: MyRequest;
-  listing: MyListing;
-  transactions: Transaction[];
+  // request: MyRequest;
+  // listing: MyListing;
+  // transactions: Transaction[];
 };
 
-enum ListingStatus {
-  Available,
-  Occupied,
-  Reserved,
-  Unavailable,
-}
-
-enum RequestStatus {
+enum Status {
   Completed,
   Cancelled,
   Matched,

@@ -1,76 +1,45 @@
-// src/util/match.util.ts
+// src/utils/match.util.ts
 
-// import { Match, Listing, Request, PrismaClient } from "@prisma/client";
-// import { MyLocation, MyMatch } from "../interfaces/types";
-// export const prisma = new PrismaClient().$extends({
-//   model: {
-//     listing: {
-//       async findMatch(
-//         userId: number,
-//         status: string,
-//         availabilityStart: Date,
-//         price: number,
-//         region: string,
-//         subregion: string,
-//         location: MyLocation
-//       ) {
-//         const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
-//         availabilityStart = new Date(availabilityStart); // Ensure departureTime is a valid Date object
-//         const match: MyMatch[] = await prisma.$queryRaw`
-//               INSERT INTO "Match" (userid, status, availabilitystart, price, region, subregion, location)
-//               VALUES (${userId}, ${status}::"ListingStatus", ${availabilityStart}, ${price}, ${region}, ${subregion}, ST_GeomFromText(${locationWKT}, 4326))
-//               RETURNING id, userid, status, availabilityStart, price, region, subregion, location::text as location`;
-//         // match[0].price = parseFloat(
-//         //   match[0].price.toFixed(2)
-//         // ) as unknown as number;
-//         //parkingSpot[0].cost = parkingSpot[0].cost.toFixed(2);
-//         return match[0];
-//       },
-//     },
-//   },
-// });
-
-import { PrismaClient } from "@prisma/client";
-import { MyLocation } from "../interfaces/types";
+import { PrismaClient, Prisma } from "@prisma/client";
+import { MyBestMatch, MyLocation } from "../interfaces/types";
 
 const prisma = new PrismaClient();
 
 interface MatchParams {
-  location: MyLocation;
-  date: Date;
-  entityType: 'listing' | 'request';
+  locationWKT: string;
+  starttime: Date;
+  searchType: "Listing" | "Request";
+  userId: number;
 }
 
-export async function findBestMatch({ location, date, entityType }: MatchParams) {
-  const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
-
-  let query;
-  if (entityType === 'request') {
-    query = prisma.$queryRaw`
-      SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, availabilitystart as date
-      FROM "Listing"
-      WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
-      AND status = 'Available'::"ListingStatus"
-    `;
-  } else if (entityType === 'listing') {
-    query = prisma.$queryRaw`
-      SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, arrivaltime as date
-      FROM "Request"
-      WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
-      AND status = 'Searching'::"RequestStatus"
-    `;
-  } else {
+export async function findBestMatch({
+  locationWKT,
+  starttime,
+  searchType,
+  userId,
+}: MatchParams): Promise<MyBestMatch | null> {
+  if (!["Listing", "Request"].includes(searchType)) {
     throw new Error("Invalid entityType. Must be 'listing' or 'request'.");
   }
 
-  const relevantEntities: any[] = await query as any[];
+  const table = searchType;
 
-  let bestMatch = null;
+  const query = await prisma.$queryRaw<MyBestMatch[]>`
+    SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, starttime as date
+    FROM ${Prisma.raw(`"${table}"`)}
+    WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
+    AND status = 'Searching'::"Status"
+    AND userid <> ${userId}
+  `;
+
+  let bestMatch: MyBestMatch | null = null;
   let bestScore = Number.MAX_VALUE;
 
-  for (const entity of relevantEntities) {
+  for (const entity of query) {
     const distanceScore = entity.distance;
-    const timeDifference = Math.abs(new Date(entity.date).getTime() - date.getTime());
+    const timeDifference = Math.abs(
+      new Date(entity.id).getTime() - starttime.getTime()
+    );
     const score = distanceScore + timeDifference;
 
     if (score < bestScore) {

@@ -1,12 +1,12 @@
 // src/services/request.service.ts
 
-import { Request, RequestStatus, RequestType } from "@prisma/client";
+import { Request, Status, RequestType } from "@prisma/client";
 import { prisma } from "../utils/request.util";
 import { MyLocation, MyRequest } from "../interfaces/types";
 
 export async function createRequest(
   userid: number,
-  status: RequestStatus,
+  status: Status,
   type: RequestType,
   arrivalTime: Date,
   departureTime: Date,
@@ -43,7 +43,7 @@ export async function getRequestById(id: number): Promise<Request | null> {
 export async function updateRequestById(
   id: number,
   data: {
-    status?: RequestStatus;
+    status?: Status;
     type?: RequestType;
     arrivalTime?: Date;
     departureTime?: Date;
@@ -54,6 +54,7 @@ export async function updateRequestById(
   const request = await prisma.request.update({
     where: { id },
     data,
+    include: { match: true }, // Include related match
   });
   return request;
 }
