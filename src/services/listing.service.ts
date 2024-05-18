@@ -1,12 +1,12 @@
 // src/service/listing.service.ts
 
-import { Listing, ListingStatus } from "@prisma/client";
+import { Listing, Status } from "@prisma/client";
 import { prisma } from "../utils/listing.util";
 import { MyLocation, MyListing } from "../interfaces/types"; // Ensure the Location type is imported correctly
 
 export async function createListing(
   userId: number,
-  status: ListingStatus,
+  status: Status,
   availabilityStart: Date,
   price: number,
   region: string,
@@ -35,7 +35,7 @@ export async function getListingById(id: number): Promise<Listing | null> {
 export async function updateListingById(
   id: number,
   data: {
-    status?: ListingStatus;
+    status?: Status;
     availabilityStart?: Date;
     price?: number;
     region?: string;

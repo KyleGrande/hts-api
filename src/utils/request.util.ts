@@ -35,7 +35,7 @@ export const prisma = new PrismaClient().$extends({
 
         // Find the most relevant listing using the generic function
         const bestMatch = await findBestMatch({
-          location,
+          locationWKT,
           starttime: starttime,
           searchType: "Listing",
           userId,

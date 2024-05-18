@@ -6,14 +6,14 @@ import { MyBestMatch, MyLocation } from "../interfaces/types";
 const prisma = new PrismaClient();
 
 interface MatchParams {
-  location: MyLocation;
+  locationWKT: string;
   starttime: Date;
   searchType: "Listing" | "Request";
   userId: number;
 }
 
 export async function findBestMatch({
-  location,
+  locationWKT,
   starttime,
   searchType,
   userId,
@@ -22,18 +22,13 @@ export async function findBestMatch({
     throw new Error("Invalid entityType. Must be 'listing' or 'request'.");
   }
 
-  const locationWKT = `POINT(${location.longitude} ${location.latitude})`;
   const table = searchType;
-  const statusCondition =
-    searchType === "Listing"
-      ? `'Available'::"ListingStatus"`
-      : `'Searching'::"RequestStatus"`;
 
   const query = await prisma.$queryRaw<MyBestMatch[]>`
     SELECT id, ST_Distance(location, ST_GeomFromText(${locationWKT}, 4326)) as distance, starttime as date
     FROM ${Prisma.raw(`"${table}"`)}
     WHERE ST_DWithin(location, ST_GeomFromText(${locationWKT}, 4326), 402.336)
-    AND status = ${Prisma.raw(statusCondition)}
+    AND status = 'Searching'::"Status"
     AND userid <> ${userId}
   `;
 

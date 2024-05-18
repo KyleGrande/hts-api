@@ -12,7 +12,7 @@ export const prisma = new PrismaClient().$extends({
     listing: {
       async create(
         userId: number,
-        status: ListingStatus,
+        status: Status,
         starttime: Date,
         price: number,
         region: string,
@@ -29,7 +29,7 @@ export const prisma = new PrismaClient().$extends({
         starttime = new Date(starttime); // Ensure availabilityStart is a valid Date object
         const listing: MyListing[] = await prisma.$queryRaw`
               INSERT INTO "Listing" (userid, status, starttime, price, region, subregion, location)
-              VALUES (${userId}, ${status}::"ListingStatus", ${starttime}, ${price}, ${region}, ${subregion}, ST_GeomFromText(${locationWKT}, 4326))
+              VALUES (${userId}, ${status}::"Status", ${starttime}, ${price}, ${region}, ${subregion}, ST_GeomFromText(${locationWKT}, 4326))
               RETURNING id, userid, status, starttime, price, region, subregion, location::text as location`;
 
         listing[0].price = parseFloat(
@@ -38,7 +38,7 @@ export const prisma = new PrismaClient().$extends({
 
         // Find the most relevant request using the generic function
         const bestMatch = await findBestMatch({
-          location,
+          locationWKT,
           starttime: starttime,
           searchType: "Request",
           userId,
@@ -47,8 +47,8 @@ export const prisma = new PrismaClient().$extends({
         if (bestMatch) {
           console.log("bestMatch", bestMatch);
           createMatchService(bestMatch.id, listing[0].id, bestMatch.distance);
-          updateListingById(listing[0].id, { status: ListingStatus.Occupied });
-          updateRequestById(bestMatch.id, { status: RequestStatus.Matched });
+          updateListingById(listing[0].id, { status: Status.Matched });
+          updateRequestById(bestMatch.id, { status: Status.Matched });
           listing[0].match = {
             id: bestMatch.id,
             distance: bestMatch.distance,
