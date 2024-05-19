@@ -15,4 +15,7 @@ export const config: Config = {
   environment: process.env.NODE_ENV || "development",
   port: process.env.API_PORT || "3000",
   databaseUrl: process.env.DATABASE_URL || "localhost",
+  supabaseUrl: process.env.SUPABASE_URL || "localhost",
+  supabaseKey: process.env.SUPABASE_API || "localhost",
+  supabaseJWT: process.env.SUPABASE_JWT || "secret",
 };

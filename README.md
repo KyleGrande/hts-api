@@ -8,6 +8,8 @@ Sync Prisma schema and database
 
 npx prisma migrate dev --name dev
 
+npx prisma studio
+
 Start the dev server
 
 npm run dev

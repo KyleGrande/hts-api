@@ -4,6 +4,9 @@ export interface Config {
   environment: string;
   port: string;
   databaseUrl: string;
+  supabaseUrl: string;
+  supabaseKey: string;
+  supabaseJWT: string;
 }
 export interface MyLocation {
   latitude: number;

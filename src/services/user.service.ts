@@ -6,11 +6,12 @@ const prisma = new PrismaClient();
 
 export async function createUser(
   email: string,
-  name?: string,
-  balance?: number
+  password: string,
+  jwt: string,
+  name: string
 ): Promise<User> {
   return prisma.user.create({
-    data: { email, name, balance },
+    data: { email, password, jwt, name },
   });
 }
 
@@ -40,4 +41,10 @@ export async function deleteUser(id: number): Promise<User> {
 
 export async function listUsers(): Promise<User[]> {
   return prisma.user.findMany();
+}
+
+export async function findUserByEmail(email: string): Promise<User | null> {
+  return prisma.user.findUnique({
+    where: { email },
+  });
 }

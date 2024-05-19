@@ -7,10 +7,12 @@ import transactionRoutes from "./transaction.routes";
 import parkingSpotRoutes from "./listing.routes";
 import requestRoutes from "./request.routes";
 import matchRoutes from "./match.routes";
+import authRoutes from "./auth.routes";
 
 const router = express.Router();
 
 export default router;
+router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/transactions", transactionRoutes);
 router.use("/parkingspots", parkingSpotRoutes);

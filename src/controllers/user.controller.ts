@@ -9,8 +9,8 @@ export async function createUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { email, name, balance } = req.body;
-    const user = await userService.createUser(email, name, balance);
+    const { email, password, jwt, name } = req.body;
+    const user = await userService.createUser(email, password, jwt, name);
     res.status(201).json(user);
   } catch (error) {
     next(error);

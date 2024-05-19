@@ -8,7 +8,7 @@ import { PrismaClient } from "@prisma/client";
 import { config } from "./config/config";
 
 import router from "./routes/router";
-import errorHandler from "./middleware/errorHandler";
+import errorHandler from "./middleware/err.middleware";
 
 const app: Application = express();
 const prisma = new PrismaClient();

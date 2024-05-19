@@ -1,7 +1,7 @@
 // src/utils/match.util.ts
 
 import { PrismaClient, Prisma } from "@prisma/client";
-import { MyBestMatch, MyLocation } from "../interfaces/types";
+import { MyBestMatch } from "../interfaces/types";
 
 const prisma = new PrismaClient();
 
